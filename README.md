@@ -2,8 +2,17 @@
 The UART transmitter takes data (usually 8-bit parallel data) and sends it one bit at a time in a specific format. It allows devices such as microcontrollers, sensors, computers, and embedded systems to communicate using only a few wires.
 
 ## Block Digram
-<img width="1280" height="552" alt="image" src="https://github.com/user-attachments/assets/14803da5-2734-4ad4-942f-5b482478e884" />
-<img width="538" height="94" alt="image" src="https://github.com/user-attachments/assets/66db8d70-92e4-42f8-8732-b48a551c7c78" />
+<div align="center">
+  <img width="500" alt="AHB Logo" src="https://github.com/user-attachments/assets/66db8d70-92e4-42f8-8732-b48a551c7c78" />
+  <p><i>Figure 1: UART Serial Transmission Timing Diagram</i></p>
+</div>
+
+<div align="center">
+  <img width="1537" height="307" alt="image" src="https://github.com/user-attachments/assets/99049196-7116-4585-8c01-b94e81afd4c7" />
+  <p><i>Figure 2: Vivado Simulation Waveform sending 8'h55 and 8'hAA</i></p>
+</div>
+
+
 
 ## File Directories
 UART Transmitter
@@ -16,6 +25,7 @@ UART Transmitter
 
 ## Signal Descriptions
 1. UART_TOP.v [parameter BAUD]
+
 | Signal Name | Direction | Width | Description |
 | :--- | :---: | :---: | :--- |
 | `clk` | Input | 1 | System Clock |
@@ -26,6 +36,7 @@ UART Transmitter
 | `tx_ready` | Output | 1 | System in IDLE state when HIGH and ready for transmission |
 
 2. UART_CU.v
+
 | Signal Name | Direction | Width | Description |
 | :--- | :---: | :---: | :--- |
 | `clk` | Input | 1 | System Clock |
@@ -39,7 +50,9 @@ UART Transmitter
 | `ready` | output | 1 | IDLE state and ready for transmission |
 
 4. UART_DU.v
+
 | Signal Name | Direction | Width | Description |
+| :--- | :---: | :---: | :--- |
 | `clk` | Input | 1 | System Clock |
 | `rst` | Input | 1 | Active Low Reset |
 | `tx_din` | Input | 8 | Parallel Data |
