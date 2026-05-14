@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module UART_DU #(parameter BAUD = 1)(
+module UART_DU (
     input clk, rst,
     input [7:0] din,
     
@@ -13,18 +13,8 @@ module UART_DU #(parameter BAUD = 1)(
     output reg tx_out 
     );
     
-    reg [15:0] baud_counter;
     reg [2:0] bit_counter;
     reg [7:0] shift_reg;
-    
-    // baud rate counter
-    always@(posedge clk, negedge rst) begin
-        if(!rst || baud_tick)
-            baud_counter <= 0;
-        else
-            baud_counter = baud_counter + 1;
-    end
-    assign baud_tick = (baud_counter == BAUD);
     
     // shift register
     always@(posedge clk, negedge rst) begin

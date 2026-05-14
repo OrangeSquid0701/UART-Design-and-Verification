@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
-module UART_TOP #(parameter BAUD = 1)(
-    input clk, rst, 
+module UART_TOP #(parameter BAUD = 5)(
+    input clk_sys, rst, 
     input [7:0] tx_din,
     input tx_start,
     
@@ -11,9 +11,17 @@ module UART_TOP #(parameter BAUD = 1)(
     
     wire baud_tick, bit_done, load_en, shift_en;
     wire [1:0] tx_sel;
+    wire clk_baud;
+    
+    UART_BAUD #(BAUD) baud (
+        .clk_in(clk_sys),
+        .rst(rst),
+        .baud_tick(baud_tick),
+        .clk_out(clk_baud)
+    );
     
     UART_CU cu (
-        .clk(clk), 
+        .clk(clk_baud), 
         .rst(rst), 
         .tx_start(tx_start),
         .baud_tick(baud_tick), 
@@ -24,14 +32,13 @@ module UART_TOP #(parameter BAUD = 1)(
         .ready(tx_ready)
     );
     
-    UART_DU #(BAUD) du (
-        .clk(clk), 
+    UART_DU du (
+        .clk(clk_baud), 
         .rst(rst), 
         .din(tx_din),
         .load_en(load_en), 
         .shift_en(shift_en),
-        .tx_sel(tx_sel), 
-        .baud_tick(baud_tick),
+        .tx_sel(tx_sel),
         .bit_done(bit_done), 
         .tx_out(tx_pin)
     );
