@@ -29,7 +29,7 @@ UART Transmitter
 
 | Signal Name | Direction | Width | Description |
 | :--- | :---: | :---: | :--- |
-| `clk` | Input | 1 | System Clock |
+| `clk_sys` | Input | 1 | System Clock |
 | `rst` | Input | 1 | Asynchronous Active Low Reset |
 | `tx_din` | Input | 8 | Parallel Data |
 | `tx_start` | Input | 1 | Active high user-controlled start button |
@@ -52,6 +52,7 @@ UART Transmitter
 | `rst` | Input | 1 | Asynchronous Active Low Reset |
 | `tx_start` | Input | 1 | Active high user-controlled start button |
 | `bit_done` | Input | 1 | HIGH when done bit asserted and serial data sent |
+| `parity_enable` | Input | 1 | Parity Modes |
 | `load_en` | output | 1 | Send HIGH to DU when loading parallel data |
 | `shift_en` | output | 1 | Send HIGH to DU when shifting out the data |
 | `tx_sel` | output | 2 | select pin to DU for output mux |
@@ -63,9 +64,10 @@ UART Transmitter
 | :--- | :---: | :---: | :--- |
 | `clk` | Input | 1 | System Clock |
 | `rst` | Input | 1 | Asynchronous Active Low Reset |
-| `tx_din` | Input | 8 | Parallel Data |
+| `din` | Input | 8 | Parallel Data |
 | `load_en` | Input | 1 | Receive HIGH from CU to load parallel data |
 | `shift_en` | Input | 1 | Receive HIGH from CU to shift out the data |
 | `tx_sel` | Input | 2 | Receive select pin (2'b00 = 1, 2'b01 = data, 2'b10 = 0) |
 | `bit_done` | output | 1 | Send HIGH to CU when sent all serial data |
+| `parity_enable` | output | 1 | Parity Modes |
 | `tx_out` | output | 1 | output tx pin |
