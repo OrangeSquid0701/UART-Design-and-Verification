@@ -3,9 +3,9 @@
 module UART_CU(
     input clk, rst, 
     input tx_start,
-    
-    input baud_tick,
+  
     input bit_done,
+    input parity_enable,
     
     output reg load_en,
     output reg shift_en,
@@ -13,8 +13,8 @@ module UART_CU(
     output reg ready
     );
     
-    parameter [1:0] IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
-    reg [1:0] NS, PS;
+    parameter [2:0] IDLE = 3'b000, START = 3'b001, DATA = 3'b010, PARITY = 3'b011, STOP = 3'b100;
+    reg [2:0] NS, PS;
     
     always@(posedge clk, negedge rst) begin
         if(!rst)
@@ -31,41 +31,39 @@ module UART_CU(
         case(PS)
             IDLE: begin
                 ready = 1;
-                if(baud_tick) begin
-                    if(tx_start) begin
-                        load_en = 1;
-                        NS = START;
-                    end
+                NS = IDLE;
+                if(tx_start) begin
+                    load_en = 1;
+                    NS = START;
                 end
-                else 
-                    NS = IDLE;
             end
             
             START: begin
                 tx_sel = 2'b10;
-                if(baud_tick)
-                    NS = DATA;
-                else
-                    NS = START;
+                NS = DATA;
             end
             
             DATA: begin
                 tx_sel = 2'b01;
-                if(baud_tick)
-                    if(bit_done)
+                if(bit_done)
+                    if(parity_enable)
+                        NS = PARITY;
+                    else
                         NS = STOP;
-                    else begin
-                        NS = DATA;
-                        shift_en = 1;
-                    end
+                else begin
+                    NS = DATA;
+                    shift_en = 1;
+                end
+            end
+            
+            PARITY: begin
+                tx_sel = 2'b11;
+                NS = STOP;
             end
             
             STOP: begin
                 tx_sel = 2'b00;
-                if(baud_tick)
-                    NS = IDLE;
-                else
-                    NS = STOP;
+                NS = IDLE;
             end
             default: NS = IDLE;
         endcase

@@ -1,14 +1,22 @@
 `timescale 1ns / 1ps
 
 module uart_tx_tb();
-
-    reg clk, rst;
-    reg [7:0] tx_din;
+    parameter BAUD = 3;
+    parameter DATA_WIDTH = 16;
+    parameter PARITY_MODE = 1; // 0: no parity, 1: odd parity, 2: even parity
+    
+    reg clk_in, rst;
+    reg [DATA_WIDTH - 1:0] tx_din;
     reg tx_start;
     wire tx_pin, tx_ready;
+    wire clk_baud;
     
-    UART_TOP #(1) dut (
-        .clk(clk),
+    UART_TOP #(
+        .BAUD(BAUD),
+        .DATA_WIDTH(DATA_WIDTH),
+        .PARITY_MODE(PARITY_MODE)
+    ) dut (
+        .clk_sys(clk_in),
         .rst(rst),
         .tx_din(tx_din),
         .tx_start(tx_start),
@@ -16,30 +24,37 @@ module uart_tx_tb();
         .tx_ready(tx_ready)
     );
     
+    assign clk_baud = dut.tx_baud.clk_out;
+    
     initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
+        clk_in = 0;
+        forever #5 clk_in = ~clk_in;
     end
     
     initial begin
         rst = 0;
         tx_start = 0;
-        tx_din = 8'b0;
+        tx_din = 16'b0;
         #10 rst = 1;
         
-        #10 tx_din = 8'h55;
-        #10 tx_start = 1;
-        #210 tx_start = 0;
+        packet(16'h55AC);
+        packet(16'hAB57);
+        packet(16'h5510);
         
-        #20 tx_din = 8'hAA;
-        #40 tx_start = 1;
-        #210 tx_start = 0;
-        #40 $finish;
-        
+        #200 $finish;
     end
     
     initial begin
-        $monitor("Present State: %d", dut.cu.PS);
+        $monitor("Present State: %d", dut.tx_cu.PS);
     end
+    
+    task packet(input [DATA_WIDTH - 1:0] data); begin
+        tx_din = data;
+        tx_start = 1;
+        @(posedge tx_ready);
+        tx_start = 0;
+        #50;
+    end
+    endtask
 
 endmodule
